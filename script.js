@@ -191,7 +191,6 @@ document.getElementById('search-transaction-form').addEventListener('submit', ev
         <th>مبلغ</th>
         <th>نوع تراکنش</th>
         <th>تاریخ</th>
-        <th>ساعت</th>
     `;
     table.appendChild(headerRow);
 
@@ -204,7 +203,6 @@ document.getElementById('search-transaction-form').addEventListener('submit', ev
             <td>${transaction.amount.toLocaleString()} ریال</td>
             <td>${transaction.type}</td>
             <td>${date}</td>
-            <td>${time}</td>
         `;
         table.appendChild(row);
     });
