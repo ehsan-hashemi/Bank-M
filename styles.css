@@ -57,6 +57,7 @@ form label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
+    text-align: right;
 }
 
 form input, form select {
