@@ -52,6 +52,7 @@ form {
     border-radius: 6px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     text-align: right;
+    direction: rtl;
 }
 
 form label {
@@ -59,6 +60,7 @@ form label {
     margin-bottom: 0.5rem;
     font-weight: bold;
     text-align: right;
+    direction: rtl;
 }
 
 form input, form select {
@@ -69,6 +71,7 @@ form input, form select {
     border-radius: 4px;
     font-family: 'Vazir', sans-serif;
     text-align: right;
+    direction: rtl;
 }
 
 button {
