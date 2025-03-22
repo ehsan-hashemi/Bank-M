@@ -40,11 +40,6 @@ document.getElementById('create-account-form').addEventListener('submit', event 
     const initialBalance = parseFloat(document.getElementById('initial-balance').value);
     const accountNumber = generateAccountNumber();
 
-    if (accounts.some(account => account.citizenCode === citizenCode)) {
-        alert('کد شهروندی تکراری است!');
-        return;
-    }
-
     const account = { firstName, lastName, phoneNumber, citizenCode, accountNumber, balance: initialBalance };
     accounts.push(account);
 
