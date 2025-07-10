@@ -1,5 +1,10 @@
+@font-face {
+    font-family: "Vazir";
+    src: url("https://ehsan-hashemi.ir/Vazir-Regular.ttf");
+}
+
 body {
-    font-family: 'Vazir', sans-serif;
+    font-family: "Vazir";
     direction: rtl;
     background-color: #eef2f3;
     color: #333;
@@ -69,7 +74,7 @@ form input, form select {
     margin-bottom: 1rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-family: 'Vazir', sans-serif;
+    font-family: "Vazir";
     text-align: right;
     direction: rtl;
 }
