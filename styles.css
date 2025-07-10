@@ -58,6 +58,7 @@ form {
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
     text-align: right;
     direction: rtl;
+    font-family: "Vazir";
 }
 
 form label {
@@ -88,6 +89,7 @@ button {
     cursor: pointer;
     border-radius: 4px;
     font-size: 1rem;
+    font-family: "Vazir";
 }
 
 button:hover {
