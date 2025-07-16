@@ -61,12 +61,19 @@ form {
     font-family: "Vazir";
 }
 
+.sh1 {
+    font-family: "Vazir";
+    width: 250px;
+    height: 20px;
+}
+
 form label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
     text-align: right;
     direction: rtl;
+    font-family: "Vazir";
 }
 
 form input, form select {

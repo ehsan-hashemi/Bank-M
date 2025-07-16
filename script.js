@@ -1,10 +1,15 @@
 function initializeApp() {
     updateDashboard();
     updateCustomerTable();
+    renderCheckList();
+    renderLoanList();
 }
 
+// داده‌ها
 const accounts = JSON.parse(localStorage.getItem('accounts')) || [];
 const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+const checks = JSON.parse(localStorage.getItem('checks')) || [];
+const loans = JSON.parse(localStorage.getItem('loans')) || [];
 
 // مدیریت صفحات
 document.getElementById('dashboard-link').addEventListener('click', () => showSection('dashboard'));
@@ -12,125 +17,105 @@ document.getElementById('create-account-link').addEventListener('click', () => s
 document.getElementById('customers-link').addEventListener('click', () => showSection('customers'));
 document.getElementById('transactions-link').addEventListener('click', () => showSection('transactions'));
 document.getElementById('history-link').addEventListener('click', () => showSection('transaction-history-section'));
+document.getElementById('checks-link').addEventListener('click', () => showSection('checks'));
+document.getElementById('loans-link').addEventListener('click', () => showSection('loans'));
 
 function showSection(sectionId) {
     document.querySelectorAll('main > section').forEach(section => section.style.display = 'none');
     document.getElementById(sectionId).style.display = 'block';
 }
 
-// تولید شماره حساب تصادفی
-function generateAccountNumber() {
-    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
-}
-
-// به‌روزرسانی localStorage
+// ذخیره
 function saveToLocalStorage() {
     localStorage.setItem('accounts', JSON.stringify(accounts));
     localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem('checks', JSON.stringify(checks));
+    localStorage.setItem('loans', JSON.stringify(loans));
+}
+
+// شماره حساب تصادفی
+function generateAccountNumber() {
+    return Math.floor(1000000000 + Math.random() * 9000000000).toString();
 }
 
 // ایجاد حساب جدید
 document.getElementById('create-account-form').addEventListener('submit', event => {
     event.preventDefault();
-
-    const firstName = document.getElementById('first-name').value;
-    const lastName = document.getElementById('last-name').value;
-    const phoneNumber = document.getElementById('phone-number').value;
-    const citizenCode = document.getElementById('citizen-code').value;
-    const initialBalance = parseFloat(document.getElementById('initial-balance').value);
-    const accountNumber = generateAccountNumber();
-
-    const account = { firstName, lastName, phoneNumber, citizenCode, accountNumber, balance: initialBalance };
+    const account = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        phoneNumber: phoneNumber.value,
+        citizenCode: citizenCode.value,
+        accountNumber: generateAccountNumber(),
+        balance: parseFloat(initialBalance.value)
+    };
     accounts.push(account);
 
-    // ثبت تراکنش به عنوان "ایجاد حساب"
-    const date = new Date();
     transactions.push({
-        accountNumber,
-        amount: initialBalance,
+        accountNumber: account.accountNumber,
+        amount: account.balance,
         type: 'ایجاد حساب',
-        date
+        date: new Date()
     });
 
     saveToLocalStorage();
     updateDashboard();
     updateCustomerTable();
-    alert('حساب با موفقیت ایجاد شد و تراکنش ثبت شد!');
-
-    document.getElementById('create-account-form').reset();
+    alert('حساب با موفقیت ایجاد شد!');
+    event.target.reset();
 });
 
-// ثبت تراکنش
+// تراکنش‌ها
+document.getElementById('transaction-type').addEventListener('change', event => {
+    document.getElementById('transfer-fields').style.display = event.target.value === 'transfer' ? 'block' : 'none';
+});
+
 document.getElementById('transaction-form').addEventListener('submit', event => {
     event.preventDefault();
-
-    const accountNumber = document.getElementById('account-number').value;
-    const amount = parseFloat(document.getElementById('transaction-amount').value);
-    const type = document.getElementById('transaction-type').value;
+    const type = transactionType.value;
+    const amount = parseFloat(transactionAmount.value);
+    const accountNumber = accountNumberInput.value;
+    const account = accounts.find(acc => acc.accountNumber === accountNumber);
     const date = new Date();
 
-    const account = accounts.find(acc => acc.accountNumber === accountNumber);
-    if (!account) {
-        alert('حسابی با این شماره حساب وجود ندارد!');
-        return;
-    }
+    if (!account) return alert('حساب مبدا پیدا نشد!');
 
-    if (type === 'withdraw' && account.balance < amount) {
-        alert('موجودی کافی نیست!');
-        return;
+    if (type === 'deposit') {
+        account.balance += amount;
+        transactions.push({ accountNumber, amount, type: 'افزایش', date });
+    } else if (type === 'withdraw') {
+        if (account.balance < amount) return alert('موجودی کافی نیست!');
+        account.balance -= amount;
+        transactions.push({ accountNumber, amount, type: 'کاهش', date });
+    } else if (type === 'transfer') {
+        const destinationNumber = destinationAccount.value;
+        const destination = accounts.find(acc => acc.accountNumber === destinationNumber);
+        if (!destination) return alert('حساب مقصد پیدا نشد!');
+        if (account.balance < amount) return alert('موجودی کافی نیست!');
+        account.balance -= amount;
+        destination.balance += amount;
+        transactions.push({ accountNumber, amount, type: 'کارت به کارت (مبدا)', date });
+        transactions.push({ accountNumber: destinationNumber, amount, type: 'کارت به کارت (مقصد)', date });
     }
-
-    account.balance += type === 'deposit' ? amount : -amount;
-    transactions.push({
-        accountNumber,
-        amount,
-        type: type === 'deposit' ? 'افزایش' : 'کاهش',
-        date
-    });
 
     saveToLocalStorage();
     updateDashboard();
     updateCustomerTable();
-    alert('تراکنش با موفقیت ثبت شد!');
-
-    document.getElementById('transaction-form').reset();
+    alert('تراکنش با موفقیت انجام شد!');
+    event.target.reset();
+    document.getElementById('transfer-fields').style.display = 'none';
 });
 
-// دکمه پاک کردن همه اطلاعات
-const clearDataButton = document.createElement('button');
-clearDataButton.innerText = 'پاک کردن تمام اطلاعات';
-clearDataButton.style.backgroundColor = '#e63946';
-clearDataButton.style.color = 'white';
-clearDataButton.style.padding = '0.5rem 1rem';
-clearDataButton.style.marginTop = '1rem';
-clearDataButton.style.border = 'none';
-clearDataButton.style.cursor = 'pointer';
-
-clearDataButton.addEventListener('click', () => {
-    if (confirm('آیا مطمئن هستید که می‌خواهید تمام اطلاعات را پاک کنید؟')) {
-        localStorage.clear();
-        accounts.length = 0;
-        transactions.length = 0;
-        updateDashboard();
-        updateCustomerTable();
-        alert('تمام اطلاعات پاک شدند!');
-    }
-});
-
-document.querySelector('main').appendChild(clearDataButton);
-
-// به‌روزرسانی داشبورد
-function updateDashboard() {
-    document.getElementById('customer-count').innerText = accounts.length;
-    const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
-    document.getElementById('total-balance').innerText = totalBalance.toLocaleString() + ' ریال';
-}
-
-// به‌روزرسانی جدول مشتریان با دکمه حذف
+// جدول مشتریان
 function updateCustomerTable() {
     const tbody = document.querySelector('#customers-table tbody');
     tbody.innerHTML = '';
+    const search = document.getElementById('search-customer-input').value.toLowerCase();
+
     accounts.forEach((account, index) => {
+        const match = `${account.firstName} ${account.lastName} ${account.phoneNumber} ${account.accountNumber}`.toLowerCase();
+        if (!match.includes(search)) return;
+
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${account.firstName}</td>
@@ -144,116 +129,110 @@ function updateCustomerTable() {
         tbody.appendChild(row);
     });
 
-    // اضافه کردن رویداد کلیک به دکمه‌های حذف
     document.querySelectorAll('.delete-account').forEach(button => {
-        button.addEventListener('click', event => {
-            const index = event.target.getAttribute('data-index');
-            if (confirm('آیا مطمئن هستید که می‌خواهید این حساب را حذف کنید؟')) {
-                accounts.splice(index, 1); // حذف حساب از آرایه
-                saveToLocalStorage(); // ذخیره تغییرات در localStorage
+        button.addEventListener('click', e => {
+            const index = e.target.dataset.index;
+            if (confirm('آیا مطمئنید؟')) {
+                accounts.splice(index, 1);
+                saveToLocalStorage();
                 updateDashboard();
                 updateCustomerTable();
-                alert('حساب با موفقیت حذف شد!');
             }
         });
     });
 }
 
-// تاریخچه تراکنش‌ها
-document.getElementById('search-transaction-form').addEventListener('submit', event => {
+document.getElementById('search-customer-input').addEventListener('input', updateCustomerTable);
+
+// داشبورد
+function updateDashboard() {
+    document.getElementById('customer-count').innerText = accounts.length;
+    const total = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+    document.getElementById('total-balance').innerText = total.toLocaleString() + ' ریال';
+}
+
+// چک‌ها
+document.getElementById('check-form').addEventListener('submit', event => {
     event.preventDefault();
+    const check = {
+        source: checkSource.value,
+        target: checkTarget.value,
+        amount: parseFloat(checkAmount.value),
+        status: checkStatus.value,
+        date: new Date()
+    };
+    checks.push(check);
+    saveToLocalStorage();
+    renderCheckList();
+    event.target.reset();
+    alert('چک ثبت شد!');
+});
 
-    const accountNumber = document.getElementById('search-account-number').value;
-    const resultsDiv = document.getElementById('transaction-history-results');
-    resultsDiv.innerHTML = '';
+function renderCheckList() {
+    const container = document.getElementById('check-list');
+    container.innerHTML = '';
+    if (checks.length === 0) return container.innerHTML = '<p>چکی ثبت نشده است.</p>';
 
-    // فیلتر تراکنش‌ها بر اساس شماره حساب
-    const accountTransactions = transactions.filter(transaction => transaction.accountNumber === accountNumber);
-
-    if (accountTransactions.length === 0) {
-        resultsDiv.innerHTML = '<p>هیچ تراکنشی برای این شماره حساب یافت نشد.</p>';
-        document.getElementById('print-transaction-history').style.display = 'none';
-        return;
-    }
-
-    // ایجاد جدول برای نمایش تراکنش‌ها
     const table = document.createElement('table');
-    table.style.width = '100%';
     table.border = '1';
-
-    const headerRow = document.createElement('tr');
-    headerRow.innerHTML = `
-        <th>مبلغ</th>
-        <th>نوع تراکنش</th>
-        <th>تاریخ</th>
+    table.innerHTML = `
+        <tr>
+            <th>فرستنده</th><th>گیرنده</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th>
+        </tr>
     `;
-    table.appendChild(headerRow);
-
-    accountTransactions.forEach(transaction => {
+    checks.forEach(c => {
         const row = document.createElement('tr');
-        const persianDate = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(transaction.date));
-        const [date, time] = persianDate.split('، ');
-
         row.innerHTML = `
-            <td>${transaction.amount.toLocaleString()} ریال</td>
-            <td>${transaction.type}</td>
-            <td>${date}</td>
+            <td>${c.source}</td><td>${c.target}</td>
+            <td>${c.amount.toLocaleString()} ریال</td>
+            <td>${c.status}</td><td>${new Date(c.date).toLocaleString('fa-IR')}</td>
         `;
         table.appendChild(row);
     });
+    container.appendChild(table);
+}
 
-    resultsDiv.appendChild(table);
-
-    // نمایش دکمه پرینت
-    document.getElementById('print-transaction-history').style.display = 'inline-block';
+// وام‌ها
+document.getElementById('loan-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const loan = {
+        account: loanAccount.value,
+        amount: parseFloat(loanAmount.value),
+        interest: parseFloat(loanInterest.value),
+        status: loanStatus.value,
+        date: new Date()
+    };
+    loans.push(loan);
+    saveToLocalStorage();
+    renderLoanList();
+    event.target.reset();
+    alert('وام ثبت شد!');
 });
 
-// دکمه پرینت
-document.getElementById('print-transaction-history').addEventListener('click', () => {
-    const accountNumber = document.getElementById('search-account-number').value;
-    const resultsDiv = document.getElementById('transaction-history-results');
+function renderLoanList() {
+    const container = document.getElementById('loan-list');
+    container.innerHTML = '';
+    if (loans.length === 0) return container.innerHTML = '<p>وامی ثبت نشده است.</p>';
 
-    if (resultsDiv.innerHTML.trim() === '') {
-        alert('هیچ محتوایی برای پرینت وجود ندارد!');
-        return;
-    }
-
-    const account = accounts.find(acc => acc.accountNumber === accountNumber);
-
-    if (!account) {
-        alert('اطلاعات صاحب حساب یافت نشد!');
-        return;
-    }
-
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>تاریخچه تراکنش‌ها</title><style>');
-    printWindow.document.write(`
-        body { font-family: Arial, sans-serif; direction: rtl; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; text-align: center; margin: 1rem 0; }
-        table th, table td { border: 1px solid #ddd; padding: 8px; }
-        table th { background-color: #007bff; color: white; }
-        .account-info { margin-bottom: 20px; }
-    `);
-    printWindow.document.write('</style></head><body>');
-    printWindow.document.write('<h2>تاریخچه تراکنش‌ها</h2>');
-
-    // اضافه کردن اطلاعات صاحب حساب
-    printWindow.document.write(`
-        <div class="account-info">
-            <p><strong>نام: </strong>${account.firstName} ${account.lastName}</p>
-            <p><strong>شماره حساب: </strong>${account.accountNumber}</p>
-            <p><strong>کد شهروندی: </strong>${account.citizenCode}</p>
-            <p><strong>شماره تلفن: </strong>${account.phoneNumber}</p>
-            <p><strong>موجودی فعلی: </strong>${account.balance.toLocaleString()} ریال</p>
-        </div>
-    `);
-
-    // افزودن جدول تاریخچه تراکنش‌ها
-    printWindow.document.write(resultsDiv.innerHTML);
-
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
-});
+    const table = document.createElement('table');
+    table.border = '1';
+    table.innerHTML = `
+        <tr>
+            <th>شماره حساب</th><th>مبلغ</th><th>کارمزد</th><th>وضعیت</th><th>تاریخ</th>
+        </tr>
+    `;
+    loans.forEach(l => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${l.account}</td>
+            <td>${l.amount.toLocaleString()} ریال</td>
+            <td>${l.interest}%</td>
+            <td>${l.status}</td>
+            <td>${new Date(l.date).toLocaleString('fa-IR')}</td>
+        `;
+        table.appendChild(row);
+    });
+    container.appendChild(table);
+}
 
 initializeApp();

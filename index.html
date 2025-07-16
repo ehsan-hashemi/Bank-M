@@ -15,6 +15,8 @@
             <a href="#" id="customers-link">مدیریت مشتریان</a>
             <a href="#" id="transactions-link">مدیریت تراکنش‌ها</a>
             <a href="#" id="history-link">تاریخچه تراکنش‌ها</a>
+            <a href="#" id="checks-link">چک‌ها</a>
+            <a href="#" id="loans-link">وام‌ها</a>
         </nav>
     </header>
     <main>
@@ -46,6 +48,7 @@
         <!-- مدیریت مشتریان -->
         <section id="customers" style="display: none;">
             <h2>مدیریت مشتریان</h2>
+            <input type="text" class="sh1" id="search-customer-input" placeholder="جستجو بر اساس نام، تلفن یا شماره حساب" style="margin-bottom:10px;">
             <table id="customers-table" border="1">
                 <thead>
                     <tr>
@@ -68,12 +71,22 @@
             <form id="transaction-form">
                 <label for="account-number">شماره حساب:</label>
                 <input type="text" id="account-number" required maxlength="10" pattern="\d{10}">
+
                 <label for="transaction-amount">مبلغ تراکنش:</label>
                 <input type="number" id="transaction-amount" required>
+
+                <label for="transaction-type">نوع تراکنش:</label>
                 <select id="transaction-type">
                     <option value="deposit">افزایش</option>
                     <option value="withdraw">کاهش</option>
+                    <option value="transfer">کارت به کارت</option>
                 </select>
+
+                <div id="transfer-fields" style="display: none;">
+                    <label for="destination-account">شماره حساب مقصد:</label>
+                    <input type="text" id="destination-account" maxlength="10" pattern="\d{10}">
+                </div>
+
                 <button type="submit">ثبت تراکنش</button>
             </form>
         </section>
@@ -88,6 +101,47 @@
             </form>
             <div id="transaction-history-results" style="margin-top: 1rem;"></div>
             <button id="print-transaction-history" style="display: none;">پرینت</button>
+        </section>
+
+        <!-- چک‌ها -->
+        <section id="checks" style="display: none;">
+            <h2>مدیریت چک‌ها</h2>
+            <form id="check-form">
+                <label for="check-source">شماره حساب فرستنده:</label>
+                <input type="text" id="check-source" required maxlength="10" pattern="\d{10}">
+                <label for="check-target">شماره حساب گیرنده:</label>
+                <input type="text" id="check-target" required maxlength="10" pattern="\d{10}">
+                <label for="check-amount">مبلغ چک:</label>
+                <input type="number" id="check-amount" required>
+                <label for="check-status">وضعیت چک:</label>
+                <select id="check-status">
+                    <option value="پرداخت شده">پرداخت شده</option>
+                    <option value="برگشتی">برگشتی</option>
+                    <option value="مسدود">مسدود</option>
+                </select>
+                <button type="submit">ثبت چک</button>
+            </form>
+            <div id="check-list" style="margin-top:1rem;"></div>
+        </section>
+
+        <!-- وام‌ها -->
+        <section id="loans" style="display: none;">
+            <h2>مدیریت وام‌ها</h2>
+            <form id="loan-form">
+                <label for="loan-account">شماره حساب گیرنده وام:</label>
+                <input type="text" id="loan-account" required maxlength="10" pattern="\d{10}">
+                <label for="loan-amount">مبلغ وام:</label>
+                <input type="number" id="loan-amount" required>
+                <label for="loan-interest">درصد کارمزد:</label>
+                <input type="number" id="loan-interest" required>
+                <label for="loan-status">وضعیت بازپرداخت:</label>
+                <select id="loan-status">
+                    <option value="در حال بازپرداخت">در حال بازپرداخت</option>
+                    <option value="بازپرداخت کامل">بازپرداخت کامل</option>
+                </select>
+                <button type="submit">ثبت وام</button>
+            </form>
+            <div id="loan-list" style="margin-top:1rem;"></div>
         </section>
     </main>
     <script src="script.js"></script>
