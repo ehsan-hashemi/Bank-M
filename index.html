@@ -1,95 +1,174 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بانک M - سیستم مدیریت</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بانک M - سیستم مدیریت</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>بانک M - سیستم مدیریت</h1>
-        <nav>
-            <a href="#" id="dashboard-link">داشبورد</a>
-            <a href="#" id="create-account-link">ایجاد حساب</a>
-            <a href="#" id="customers-link">مدیریت مشتریان</a>
-            <a href="#" id="transactions-link">مدیریت تراکنش‌ها</a>
-            <a href="#" id="history-link">تاریخچه تراکنش‌ها</a>
-        </nav>
-    </header>
-    <main>
-        <!-- داشبورد -->
-        <section id="dashboard">
-            <h2>داشبورد</h2>
-            <p>تعداد مشتریان: <span id="customer-count">0</span></p>
-            <p>موجودی کل: <span id="total-balance">0</span></p>
-        </section>
+  <header>
+    <h1>بانک M - سیستم مدیریت</h1>
+    <nav>
+      <a href="#" id="dashboard-link">داشبورد</a>
+      <a href="#" id="create-account-link">ایجاد حساب</a>
+      <a href="#" id="customers-link">مدیریت مشتریان</a>
+      <a href="#" id="transactions-link">مدیریت تراکنش‌ها</a>
+      <a href="#" id="history-link">تاریخچه تراکنش‌ها</a>
+      <a href="#" id="cheques-link">مدیریت چک‌ها</a>
+      <a href="#" id="loans-link">مدیریت وام‌ها</a>
+    </nav>
+  </header>
 
-        <!-- ایجاد حساب -->
-        <section id="create-account" style="display: none;">
-            <h2>ایجاد حساب جدید</h2>
-            <form id="create-account-form">
-                <label for="first-name">نام:</label>
-                <input type="text" id="first-name" required>
-                <label for="last-name">نام خانوادگی:</label>
-                <input type="text" id="last-name" required>
-                <label for="phone-number">شماره تلفن:</label>
-                <input type="tel" id="phone-number" required>
-                <label for="citizen-code">کد شهروندی (۶ رقمی):</label>
-                <input type="text" id="citizen-code" required maxlength="6" pattern="\d{6}">
-                <label for="initial-balance">موجودی اولیه:</label>
-                <input type="number" id="initial-balance" required>
-                <button type="submit">ایجاد حساب</button>
-            </form>
-        </section>
+  <main>
+    <!-- داشبورد -->
+    <section id="dashboard">
+      <h2>داشبورد</h2>
+      <p>تعداد مشتریان: <span id="customer-count">0</span></p>
+      <p>موجودی کل: <span id="total-balance">0</span></p>
+    </section>
 
-        <!-- مدیریت مشتریان -->
-        <section id="customers" style="display: none;">
-            <h2>مدیریت مشتریان</h2>
-            <table id="customers-table" border="1">
-                <thead>
-                    <tr>
-                        <th>نام</th>
-                        <th>نام خانوادگی</th>
-                        <th>شماره تلفن</th>
-                        <th>کد شهروندی</th>
-                        <th>شماره حساب</th>
-                        <th>موجودی</th>
-                        <th>عملیات</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </section>
+    <!-- ایجاد حساب -->
+    <section id="create-account" style="display:none;">
+      <h2>ایجاد حساب جدید</h2>
+      <form id="create-account-form">
+        <label for="first-name">نام:</label>
+        <input type="text" id="first-name" required>
+        <label for="last-name">نام خانوادگی:</label>
+        <input type="text" id="last-name" required>
+        <label for="phone-number">شماره تلفن:</label>
+        <input type="tel" id="phone-number" required>
+        <label for="citizen-code">کد شهروندی (۶ رقمی):</label>
+        <input type="text" id="citizen-code" required maxlength="6" pattern="\d{6}">
+        <label for="initial-balance">موجودی اولیه:</label>
+        <input type="number" id="initial-balance" required>
+        <button type="submit">ایجاد حساب</button>
+      </form>
+    </section>
 
-        <!-- مدیریت تراکنش‌ها -->
-        <section id="transactions" style="display: none;">
-            <h2>مدیریت تراکنش‌ها</h2>
-            <form id="transaction-form">
-                <label for="account-number">شماره حساب:</label>
-                <input type="text" id="account-number" required maxlength="10" pattern="\d{10}">
-                <label for="transaction-amount">مبلغ تراکنش:</label>
-                <input type="number" id="transaction-amount" required>
-                <select id="transaction-type">
-                    <option value="deposit">افزایش</option>
-                    <option value="withdraw">کاهش</option>
-                </select>
-                <button type="submit">ثبت تراکنش</button>
-            </form>
-        </section>
+    <!-- مدیریت مشتریان -->
+    <section id="customers" style="display:none;">
+      <h2>مدیریت مشتریان</h2>
+      <form id="search-customer-form">
+        <input type="text" id="search-customer-input"
+               placeholder="جستجو بر اساس نام، تلفن، کد شهروندی یا شماره حساب">
+        <button type="submit">جستجو</button>
+      </form>
+      <table id="customers-table" border="1">
+        <thead>
+          <tr>
+            <th>نام</th>
+            <th>نام خانوادگی</th>
+            <th>شماره تلفن</th>
+            <th>کد شهروندی</th>
+            <th>شماره حساب</th>
+            <th>موجودی</th>
+            <th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
-        <!-- تاریخچه تراکنش‌ها -->
-        <section id="transaction-history-section" style="display: none;">
-            <h2>تاریخچه تراکنش‌ها</h2>
-            <form id="search-transaction-form">
-                <label for="search-account-number">شماره حساب:</label>
-                <input type="text" id="search-account-number" required maxlength="10" pattern="\d{10}">
-                <button type="submit">جستجو</button>
-            </form>
-            <div id="transaction-history-results" style="margin-top: 1rem;"></div>
-            <button id="print-transaction-history" style="display: none;">پرینت</button>
-        </section>
-    </main>
-    <script src="script.js"></script>
+    <!-- مدیریت تراکنش‌ها -->
+    <section id="transactions" style="display:none;">
+      <h2>مدیریت تراکنش‌ها</h2>
+      <form id="transaction-form">
+        <label for="account-number">شماره حساب:</label>
+        <input type="text" id="account-number" required maxlength="10" pattern="\d{10}">
+        <label for="transaction-amount">مبلغ تراکنش:</label>
+        <input type="number" id="transaction-amount" required>
+        <label for="transaction-type">نوع تراکنش:</label>
+        <select id="transaction-type">
+          <option value="deposit">افزایش</option>
+          <option value="withdraw">کاهش</option>
+          <option value="transfer">حساب به حساب</option>
+          <option value="check">چک</option>
+        </select>
+
+        <div id="destination-account-container" style="display:none;">
+          <label for="destination-account">شماره حساب مقصد:</label>
+          <input type="text" id="destination-account" maxlength="10" pattern="\d{10}">
+        </div>
+
+        <div id="cheque-code-container" style="display:none;">
+          <label for="cheque-code">کد چک:</label>
+          <input type="text" id="cheque-code" readonly>
+        </div>
+
+        <button type="submit">ثبت تراکنش</button>
+      </form>
+    </section>
+
+    <!-- تاریخچه تراکنش‌ها -->
+    <section id="transaction-history-section" style="display:none;">
+      <h2>تاریخچه تراکنش‌ها</h2>
+      <form id="search-transaction-form">
+        <label for="search-account-number">شماره حساب:</label>
+        <input type="text" id="search-account-number" required maxlength="10" pattern="\d{10}">
+        <button type="submit">جستجو</button>
+      </form>
+      <div id="transaction-history-results" style="margin-top:1rem;"></div>
+      <button id="print-transaction-history" style="display:none;">پرینت</button>
+    </section>
+
+    <!-- مدیریت چک‌ها -->
+    <section id="cheques" style="display:none;">
+      <h2>مدیریت چک‌ها</h2>
+      <form id="add-cheque-form">
+        <button type="button" id="generate-cheque-code">تولید کد چک</button>
+        <label for="cheque-code">کد چک:</label>
+        <input type="text" id="cheque-code" readonly>
+        <label for="cheque-account-number">شماره حساب:</label>
+        <input type="text" id="cheque-account-number" maxlength="10" pattern="\d{10}" required>
+        <button type="submit">افزودن چک</button>
+      </form>
+      <table id="cheques-table" border="1">
+        <thead>
+          <tr>
+            <th>کد چک</th>
+            <th>نام مشتری</th>
+            <th>شماره حساب</th>
+            <th>وضعیت</th>
+            <th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- مدیریت وام‌ها -->
+    <section id="loans" style="display:none;">
+      <h2>مدیریت وام‌ها</h2>
+      <form id="add-loan-form">
+        <button type="button" id="generate-loan-id">تولید شناسه وام</button>
+        <label for="loan-id">شناسه وام:</label>
+        <input type="text" id="loan-id" readonly>
+        <label for="loan-account-number">شماره حساب:</label>
+        <input type="text" id="loan-account-number" maxlength="10" pattern="\d{10}" required>
+        <label for="loan-amount">مبلغ وام:</label>
+        <input type="number" id="loan-amount" required>
+        <label for="loan-interest">نرخ بهره (%) :</label>
+        <input type="number" id="loan-interest" step="0.01" required>
+        <button type="submit">افزودن وام</button>
+      </form>
+      <table id="loans-table" border="1">
+        <thead>
+          <tr>
+            <th>شناسه وام</th>
+            <th>نام مشتری</th>
+            <th>شماره حساب</th>
+            <th>مبلغ</th>
+            <th>نرخ بهره</th>
+            <th>وضعیت</th>
+            <th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
